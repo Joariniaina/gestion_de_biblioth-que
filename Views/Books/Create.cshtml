@@ -1,0 +1,77 @@
+@model LibraryApp.Web.DTOs.BookDto
+@{
+    ViewData["Title"] = "Ajouter un livre";
+}
+
+<h2>Ajouter un livre</h2>
+
+<form asp-action="Create" method="post">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Author" class="form-label"></label>
+        <input asp-for="Author" class="form-control" />
+        <span asp-validation-for="Author" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="ISBN" class="form-label"></label>
+        <input asp-for="ISBN" class="form-control" />
+        <span asp-validation-for="ISBN" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Publisher" class="form-label"></label>
+        <input asp-for="Publisher" class="form-control" />
+        <span asp-validation-for="Publisher" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PublicationYear" class="form-label"></label>
+        <input asp-for="PublicationYear" class="form-control" type="number" />
+        <span asp-validation-for="PublicationYear" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Genre" class="form-label"></label>
+        <input asp-for="Genre" class="form-control" />
+        <span asp-validation-for="Genre" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Language" class="form-label"></label>
+        <input asp-for="Language" class="form-control" />
+        <span asp-validation-for="Language" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PageCount" class="form-label"></label>
+        <input asp-for="PageCount" class="form-control" type="number" />
+        <span asp-validation-for="PageCount" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="TotalCopies" class="form-label"></label>
+        <input asp-for="TotalCopies" class="form-control" type="number" min="1" />
+        <span asp-validation-for="TotalCopies" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Summary" class="form-label"></label>
+        <textarea asp-for="Summary" class="form-control" rows="3"></textarea>
+        <span asp-validation-for="Summary" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Tags" class="form-label">Tags (séparés par des virgules)</label>
+        <input asp-for="Tags" class="form-control" />
+        <span asp-validation-for="Tags" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ajouter</button>
+    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+</form>

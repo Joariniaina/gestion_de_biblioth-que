@@ -1,0 +1,55 @@
+@model LibraryApp.Web.DTOs.BookDetailsDto
+@{
+    ViewData["Title"] = "Détails du livre";
+}
+
+<h2>Détails du livre</h2>
+
+<div class="mb-3">
+    <h4>@Model.Title</h4>
+    <p><strong>Auteur :</strong> @Model.Author</p>
+    <p><strong>Genre :</strong> @Model.Genre</p>
+    <p><strong>Année :</strong> @Model.PublicationYear</p>
+    <p><strong>Résumé :</strong> @Model.Summary</p>
+    <p><strong>Copies disponibles :</strong> @Model.CopiesAvailable / @Model.TotalCopies</p>
+    <p><strong>Nombre d'emprunts :</strong> @Model.TimesBorrowed</p>
+</div>
+
+<h4>Historique des emprunts</h4>
+
+@if (Model.BorrowHistory.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Utilisateur</th>
+                <th>Code copie</th>
+                <th>Emprunté le</th>
+                <th>Retour prévu</th>
+                <th>Retour réel</th>
+                <th>Amende</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loan in Model.BorrowHistory.OrderByDescending(l => l.BorrowedAt))
+            {
+                <tr>
+                    <td>@loan.UserId</td>
+                    <td>@loan.CopyCode</td>
+                    <td>@loan.BorrowedAt.ToShortDateString()</td>
+                    <td>@loan.DueDate.ToShortDateString()</td>
+                    <td>@(loan.ReturnedAt.HasValue 
+                        ? loan.ReturnedAt.Value.ToShortDateString() 
+                        : "Non retourné")</td>
+                    <td>@loan.Fine.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p class="text-muted">Aucun emprunt enregistré pour ce livre.</p>
+}
+
+<a asp-action="Index" class="btn btn-secondary">Retour</a>

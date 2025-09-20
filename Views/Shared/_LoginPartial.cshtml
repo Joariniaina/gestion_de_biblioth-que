@@ -1,0 +1,28 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var userId = HttpContextAccessor.HttpContext?.Session.GetString("UserId");
+}
+
+<ul class="navbar-nav ms-auto">
+    @if (string.IsNullOrEmpty(userId))
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Account" asp-action="Login">Connexion</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-controller="Account" asp-action="Register">Inscription</a>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <form class="d-inline" asp-controller="Account" asp-action="Logout" method="post">
+                <button type="submit" class="btn btn-link nav-link" style="display:inline; padding:0; border:none; background:none;">
+                    Déconnexion
+                </button>
+            </form>
+        </li>
+    }
+</ul>
