@@ -60,7 +60,7 @@
 
         <div class="col">
             <div class="card h-100 shadow-sm border-0">
-                       @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                @if (!string.IsNullOrEmpty(book.CoverImageUrl))
                 {
                     <img src="@book.CoverImageUrl" class="card-img-top" alt="Couverture de @book.Title" style="height: 250px; object-fit: cover;">
                 }

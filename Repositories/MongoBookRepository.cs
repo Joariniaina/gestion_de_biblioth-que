@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace LibraryApp.Web.Repositories
 {
@@ -53,8 +54,8 @@ public async Task<bool> DeleteBookAsync(string id)
         // Recherches avancées
         public async Task<IEnumerable<Book>> GetBooksByAuthorGenreYearAsync(string author, string genre, int minYear)
         {
-            var filter = Builders<Book>.Filter.Eq(b => b.Author, author) &
-                         Builders<Book>.Filter.Eq(b => b.Genre, genre) &
+            var filter = Builders<Book>.Filter.Eq(b => b.Author, author) |
+                         Builders<Book>.Filter.Eq(b => b.Genre, genre) |
                          Builders<Book>.Filter.Gte(b => b.PublicationYear, minYear);
             return await _books.Find(filter).ToListAsync();
         }
@@ -146,6 +147,30 @@ public async Task<bool> DeleteBookAsync(string id)
 
             var res = await _books.UpdateOneAsync(b => b.Id == bookId, update);
             return res.ModifiedCount > 0;
+        }
+        // gestion de la theme
+        // Implémentation : Récupère tous les genres uniques
+        public async Task<IEnumerable<string>> GetAllUniqueGenresAsync()
+        {
+            return await _books.Distinct(b => b.Genre, Builders<Book>.Filter.Empty)
+                               .ToListAsync();
+        }
+
+        // Implémentation : Trouve le premier livre d'un genre avec une image de couverture
+        public async Task<Book?> FindBookByGenreWithCoverImageAsync(string genre)
+        {
+            var filter = Builders<Book>.Filter.Eq(b => b.Genre, genre) &
+                         Builders<Book>.Filter.Ne(b => b.CoverImageUrl, null) &
+                         Builders<Book>.Filter.Ne(b => b.CoverImageUrl, string.Empty);
+
+            return await _books.Find(filter).FirstOrDefaultAsync();
+        }
+
+        // Implémentation : Récupère tous les livres pour un genre donné
+        public async Task<IEnumerable<Book>> GetBooksByGenreAsync(string genre)
+        {
+            var filter = Builders<Book>.Filter.Eq(b => b.Genre, genre);
+            return await _books.Find(filter).ToListAsync();
         }
     }
 }

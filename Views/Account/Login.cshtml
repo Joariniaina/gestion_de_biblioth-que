@@ -3,18 +3,43 @@
     ViewData["Title"] = "Connexion";
 }
 
-<h2>Connexion</h2>
-<form asp-action="Login" method="post" class="mt-3">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm" style="border: 1px solid #4682B4;">
+                <div class="card-header text-white text-center" style="background-color: #4682B4;">
+                    <h4>Connexion</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Login" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">
+                                <i class="bi bi-envelope"></i> Adresse e-mail
+                            </label>
+                            <input asp-for="Email" class="form-control" placeholder="Entrez votre e-mail" style="border: 1px solid #4682B4;" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label">
+                                <i class="bi bi-lock"></i> Mot de passe
+                            </label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Entrez votre mot de passe" style="border: 1px solid #4682B4;" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn text-white" style="background-color: #4682B4;">
+                                <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center" style="background-color: #D3D3D3;">
+                    <small>
+                        <a href="/Account/Register" style="color: #4682B4; text-decoration: underline;">Pas encore de compte ? Inscrivez-vous</a>
+                    </small>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label"></label>
-        <input asp-for="Password" type="password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Se connecter</button>
-</form>
+</div>

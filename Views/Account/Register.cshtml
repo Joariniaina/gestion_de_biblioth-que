@@ -1,37 +1,63 @@
 @model LibraryApp.Web.DTOs.RegisterDto
+@{
+    ViewData["Title"] = "Inscription";
+}
 
-<h2>Inscription</h2>
-<form asp-action="Register" method="post">
-    <div class="mb-3">
-        <label asp-for="Name" class="form-label"></label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm" style="border: 1px solid #4682B4;">
+            <div class="card-header text-white text-center w-full" style="background-color: #4682B4;">
+                <h4>S'inscrire</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Register" method="post">
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label" style="color: #2F4F4F; font-weight: 500;"></label>
+                        <input asp-for="Name" class="form-control" style="border: 1px solid #4682B4; background-color: #F8F8FF;" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label" style="color: #2F4F4F; font-weight: 500;"></label>
+                        <input asp-for="Email" class="form-control" style="border: 1px solid #4682B4; background-color: #F8F8FF;" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label" style="color: #2F4F4F; font-weight: 500;"></label>
+                        <input asp-for="Password" type="password" class="form-control" style="border: 1px solid #4682B4; background-color: #F8F8FF;" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Role" class="form-label" style="color: #2F4F4F; font-weight: 500;"></label>
+                        <select asp-for="Role" class="form-select" style="border: 1px solid #4682B4; background-color: #F8F8FF;">
+                            <option value="User">User</option>
+                            <option value="Librarian">Librarian</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Phone" class="form-label" style="color: #2F4F4F; font-weight: 500;"></label>
+                        <input asp-for="Phone" class="form-control" style="border: 1px solid #4682B4; background-color: #F8F8FF;" />
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label" style="color: #2F4F4F; font-weight: 500;"></label>
+                        <input asp-for="Address" class="form-control" style="border: 1px solid #4682B4; background-color: #F8F8FF;" />
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                         <button type="submit" class="btn" style="background-color: #4682B4; color: #FFF; font-weight: bold;">S'inscrire</button>
+                    </div>
+                </form>
+
+            </div>
+            <div class="card-footer text-center" style="background-color: #D3D3D3;">
+                <small>Vous avez déjà un compte ?
+                    <a asp-controller="Account" asp-action="Login" style="color: #4682B4; text-decoration: underline; font-weight: bold;">Se connecter</a>
+                </small>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Password" class="form-label"></label>
-        <input asp-for="Password" type="password" class="form-control" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Role" class="form-label"></label>
-        <select asp-for="Role" class="form-select">
-            <option value="User">User</option>
-            <option value="Librarian">Librarian</option>
-            <option value="Admin">Admin</option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Phone" class="form-label"></label>
-        <input asp-for="Phone" class="form-control" />
-    </div>
-    <div class="mb-3">
-        <label asp-for="Address" class="form-label"></label>
-        <input asp-for="Address" class="form-control" />
-    </div>
-    <button type="submit" class="btn btn-primary">S'inscrire</button>
-</form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -15,12 +15,16 @@ namespace LibraryApp.Web.DTOs
         public string Language { get; set; } = "French";
         public int PageCount { get; set; }
         public string Summary { get; set; } = string.Empty;
-        public List<string> Tags { get; set; } = new();
+        public List<string> Tags { get; set;} = new();
 
         // Copies
-        public int TotalCopies { get; set; }
-        public int CopiesAvailable { get; set; }
-        public List<CopyInfoDto> Copies { get; set; } = new();
+        public int TotalCopies { get; set;}
+        public int CopiesAvailable { get; set;}
+        public List<CopyInfoDto> Copies { get; set;} = new();
+
+        // Ajout de la propriété pour l'URL de l'image
+        public string CoverImageUrl { get; set; } = string.Empty;
+
 
         // Statistiques
         public int TimesBorrowed { get; set; }

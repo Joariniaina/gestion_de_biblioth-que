@@ -59,5 +59,22 @@ namespace LibraryApp.Web.Services
         // ===== Recherche textuelle =====
         public Task<IEnumerable<Book>> TextSearchAsync(string query)
             => _bookRepo.TextSearchAsync(query);
+
+        // ====== Gestion des copies =====
+        public async Task<IEnumerable<string>> GetAllUniqueGenresAsync()
+        {
+            return await _bookRepo.GetAllUniqueGenresAsync();
+        }
+
+        public async Task<string?> GetCoverImageUrlForGenreAsync(string genre)
+        {
+            var bookWithCover = await _bookRepo.FindBookByGenreWithCoverImageAsync(genre);
+            return bookWithCover?.CoverImageUrl;
+        }
+
+        public async Task<IEnumerable<Book>> GetBooksByGenreAsync(string genre)
+        {
+            return await _bookRepo.GetBooksByGenreAsync(genre);
+        }
     }
 }

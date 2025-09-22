@@ -3,41 +3,81 @@
     ViewData["Title"] = "Modifier le livre";
 }
 
-<h2>Modifier le livre</h2>
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm" style="border: 1px solid #4682B4;">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4" text-primary style="color: #4682B4; font-weight: bold;">Modifier le livre</h2>
+                <hr />
+                <form asp-action="Edit" method="post">
+                    <input type="hidden" asp-for="Id" />
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-    
-    <div class="mb-3">
-        <label asp-for="Title" class="form-label"></label>
-        <input asp-for="Title" class="form-control" />
-        <span asp-validation-for="Title" class="text-danger"></span>
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label"></label>
+                        <input asp-for="Title" class="form-control" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Author" class="form-label"></label>
+                        <input asp-for="Author" class="form-control" />
+                        <span asp-validation-for="Author" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ISBN" class="form-label"></label>
+                        <input asp-for="ISBN" class="form-control" />
+                        <span asp-validation-for="ISBN" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Publisher" class="form-label"></label>
+                        <input asp-for="Publisher" class="form-control" />
+                        <span asp-validation-for="Publisher" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PublicationYear" class="form-label"></label>
+                        <input asp-for="PublicationYear" class="form-control" type="number" />
+                        <span asp-validation-for="PublicationYear" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Genre" class="form-label"></label>
+                        <input asp-for="Genre" class="form-control" />
+                        <span asp-validation-for="Genre" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Language" class="form-label"></label>
+                        <input asp-for="Language" class="form-control" />
+                        <span asp-validation-for="Language" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PageCount" class="form-label"></label>
+                        <input asp-for="PageCount" class="form-control" type="number" />
+                        <span asp-validation-for="PageCount" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="TotalCopies" class="form-label"></label>
+                        <input asp-for="TotalCopies" class="form-control" type="number" />
+                        <span asp-validation-for="TotalCopies" class="text-danger"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Modifier</button>
+                    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
+                </form>
+            </div>
+        </div>
     </div>
-    
-    <div class="mb-3">
-        <label asp-for="Author" class="form-label"></label>
-        <input asp-for="Author" class="form-control" />
-        <span asp-validation-for="Author" class="text-danger"></span>
-    </div>
-    
-    <div class="mb-3">
-        <label asp-for="Genre" class="form-label"></label>
-        <input asp-for="Genre" class="form-control" />
-        <span asp-validation-for="Genre" class="text-danger"></span>
-    </div>
-    
-    <div class="mb-3">
-        <label asp-for="PublicationYear" class="form-label"></label>
-        <input asp-for="PublicationYear" class="form-control" type="number" />
-        <span asp-validation-for="PublicationYear" class="text-danger"></span>
-    </div>
-    
-    <div class="mb-3">
-        <label asp-for="TotalCopies" class="form-label"></label>
-        <input asp-for="TotalCopies" class="form-control" type="number" />
-        <span asp-validation-for="TotalCopies" class="text-danger"></span>
-    </div>
-    
-    <button type="submit" class="btn btn-primary">Modifier</button>
-    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
-</form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+
+
+

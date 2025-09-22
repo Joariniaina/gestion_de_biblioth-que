@@ -41,6 +41,7 @@ namespace LibraryApp.Web.Services
             copy.Available = false;
             copy.BorrowedBy = dto.UserId;
             book.CopiesAvailable--;
+            book.TimesBorrowed++;
 
             // ✅ Vérification update
             var updated = await _bookRepo.UpdateBookAsync(book.Id, book);

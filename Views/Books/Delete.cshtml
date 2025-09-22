@@ -3,14 +3,36 @@
     ViewData["Title"] = "Supprimer le livre";
 }
 
-<h2>Supprimer le livre</h2>
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <h2 class="text-center mb-4 text-danger">Supprimer le livre</h2>
+                <hr />
+                <h4 class="text-center mb-4">Êtes-vous sûr de vouloir supprimer ce livre ?</h4>
+                
+                <div class="alert alert-danger text-center mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Cette action est irréversible.
+                </div>
 
-<div class="alert alert-danger">
-    Êtes-vous sûr de vouloir supprimer le livre <strong>@Model.Title</strong> ?
+                <div class="mb-4">
+                    <dl class="row">
+                        <dt class="col-sm-3">Titre</dt>
+                        <dd class="col-sm-9"><strong>@Model.Title</strong></dd>
+
+                        <dt class="col-sm-3">Auteur</dt>
+                        <dd class="col-sm-9">@Model.Author</dd>
+                    </dl>
+                </div>
+
+                <form asp-action="Delete" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                        <button type="submit" class="btn btn-danger btn-lg">Confirmer la suppression</button>
+                        <a asp-action="Index" class="btn btn-secondary btn-lg">Annuler</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-
-<form asp-action="Delete" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Supprimer</button>
-    <a asp-action="Index" class="btn btn-secondary">Annuler</a>
-</form>

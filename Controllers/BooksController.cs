@@ -20,30 +20,31 @@ namespace LibraryApp.Web.Controllers
         }
 
         // ===== CRUD =====
-public async Task<IActionResult> Index()
-{
-    var books = await _bookService.GetAllBooksAsync();
-    var currentUserId = HttpContext.Session.GetString("UserId");
-
-    var viewModels = new List<BookLoanViewModel>();
-
-    foreach (var book in books)
-    {
-        // Récupérer uniquement les prêts actifs pour ce livre
-        var loans = await _loanService.GetLoansByBookIdAsync(book.Id);
-
-        // Filtrer par utilisateur si besoin
-        var userLoans = loans.Where(l => l.UserId == currentUserId).ToList();
-
-        viewModels.Add(new BookLoanViewModel
+        public async Task<IActionResult> Index()
         {
-            Book = book,
-            Loans = userLoans
-        });
-    }
+            var books = await _bookService.GetAllBooksAsync();
+            var currentUserId = HttpContext.Session.GetString("UserId");
 
-    return View(viewModels);
-}
+            var viewModels = new List<BookLoanViewModel>();
+
+
+            foreach (var book in books)
+            {
+                // Récupérer uniquement les prêts actifs pour ce livre
+                var loans = await _loanService.GetLoansByBookIdAsync(book.Id);
+
+                // Filtrer par utilisateur si besoin
+                var userLoans = loans.Where(l => l.UserId == currentUserId).ToList();
+
+                viewModels.Add(new BookLoanViewModel
+                {
+                    Book = book,
+                    Loans = userLoans
+                });
+            }
+
+            return View(viewModels);
+        }
 
 
         public IActionResult Create() => View();
@@ -53,6 +54,20 @@ public async Task<IActionResult> Index()
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(BookDto dto)
         {
+            if (dto.CoverImageUrl != null)
+            {
+                // Nom original du fichier (ex: images.jpeg)
+                var fileName = Path.GetFileName(dto.CoverImageUrl.FileName);
+
+                // On le sauvegarde dans wwwroot/images/
+                var savePath = Path.Combine("wwwroot/images", fileName);
+
+                using (var stream = new FileStream(savePath, FileMode.Create))
+                {
+                    await dto.CoverImageUrl.CopyToAsync(stream);
+                }
+
+            }
             if (!ModelState.IsValid) return View(dto);
 
             // Création du livre
@@ -64,6 +79,7 @@ public async Task<IActionResult> Index()
                 Publisher = dto.Publisher,
                 PublicationYear = dto.PublicationYear,
                 Genre = dto.Genre,
+                CoverImageUrl = dto.CoverImageUrl != null ? "/images/" + Path.GetFileName(dto.CoverImageUrl.FileName) : "",
                 Language = dto.Language,
                 PageCount = dto.PageCount,
                 TotalCopies = dto.TotalCopies,
@@ -156,21 +172,72 @@ public async Task<IActionResult> Index()
         public async Task<IActionResult> Search(string keyword)
         {
             var results = await _bookService.SearchAvailableBooksAsync(keyword ?? "");
-            return View("Index", results);
+            var bookLoanViewModelsSearch = results.Select(book => new BookLoanViewModel
+            {
+                Book = book,
+                Loans = new List<Loan>() 
+            });
+            return View("Index", bookLoanViewModelsSearch);
         }
 
         public async Task<IActionResult> Filter(string author, string genre, int minYear = 0)
         {
             var results = await _bookService.GetBooksByAuthorGenreYearAsync(author ?? "", genre ?? "", minYear);
-            return View("Index", results);
+            var bookLoanViewModelsFilter = results.Select(book => new BookLoanViewModel
+            {
+                Book = book,
+                Loans = new List<Loan>() 
+            });
+            return View("Index", bookLoanViewModelsFilter);
         }
 
         // ===== Top / Récent / Pagination / Tri =====
-        public async Task<IActionResult> TopBorrowed() => View("Index", await _bookService.GetTopBorrowedBooksAsync());
-        public async Task<IActionResult> Recent() => View("Index", await _bookService.GetRecentAvailableBooksAsync());
-        public async Task<IActionResult> Paged(int page = 1, int size = 10) => View("Index", await _bookService.GetBooksPagedAsync(page, size));
-        public async Task<IActionResult> Sorted(string sortBy = "Title", bool asc = true) => View("Index", await _bookService.GetBooksSortedAsync(sortBy, asc));
-
+        public async Task<IActionResult> TopBorrowed()
+        {
+            var books = await _bookService.GetTopBorrowedBooksAsync();
+            var bookLoanViewModels = books.Select(book => new BookLoanViewModel
+            {
+                Book = book,
+                // Si tu n'as pas besoin des prêts pour ces actions spécifiques,
+                // tu peux initialiser Loans à une liste vide.
+                // Sinon, tu devras récupérer les prêts ici si ton BookLoanViewModel les nécessite.
+                Loans = new List<Loan>() 
+            });
+            return View("Index", bookLoanViewModels);
+        }
+        
+        public async Task<IActionResult> Recent()
+        {
+            var books = await _bookService.GetRecentAvailableBooksAsync();
+            var bookLoanViewModels = books.Select(book => new BookLoanViewModel
+            {
+                Book = book,
+                Loans = new List<Loan>() // Idem pour ici
+            });
+            return View("Index", bookLoanViewModels);
+        }
+        
+        public async Task<IActionResult> Paged(int page = 1, int size = 10)
+        {
+            var books = await _bookService.GetBooksPagedAsync(page, size);
+            var bookLoanViewModels = books.Select(book => new BookLoanViewModel
+            {
+                Book = book,
+                Loans = new List<Loan>() // Idem pour ici
+            });
+            return View("Index", bookLoanViewModels);
+        }
+        
+        public async Task<IActionResult> Sorted(string sortBy = "Title", bool asc = true)
+        {
+            var books = await _bookService.GetBooksSortedAsync(sortBy, asc);
+            var bookLoanViewModels = books.Select(book => new BookLoanViewModel
+            {
+                Book = book,
+                Loans = new List<Loan>() // Idem pour ici
+            });
+            return View("Index", bookLoanViewModels);
+        }
         // ===== Emprunts via LoanService =====
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -219,6 +286,7 @@ public async Task<IActionResult> Index()
                 PublicationYear = book.PublicationYear,
                 Genre = book.Genre,
                 Language = book.Language,
+                CoverImageUrl = book.CoverImageUrl,
                 PageCount = book.PageCount,
                 Summary = book.Summary,
                 Tags = book.Tags,
@@ -235,6 +303,24 @@ public async Task<IActionResult> Index()
             };
 
             return View(dto);
+        }
+
+        public async Task<IActionResult> BooksByGenre(string genre)
+        {
+            if (string.IsNullOrEmpty(genre))
+            {
+                // Si le genre est vide, redirige vers la page principale des livres
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Récupère tous les livres pour le genre spécifié
+            var books = await _bookService.GetBooksByGenreAsync(genre);
+
+            // Passe le nom du genre à la vue pour l'afficher dans le titre
+            ViewBag.CurrentGenre = genre;
+
+            // Retourne la vue "BooksByGenre.cshtml" avec la liste des livres
+            return View(books); // Cette vue attendra un IEnumerable<Book>
         }
 
     }

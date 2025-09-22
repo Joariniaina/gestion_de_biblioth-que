@@ -33,5 +33,17 @@ namespace LibraryApp.Web.Repositories
 
         // Gestion des copies
         Task<bool> UpdateCopiesAsync(string bookId, List<CopyInfo> copies);
+
+        // gestion de la theme
+        // Nouvelle méthode pour obtenir tous les genres uniques
+        Task<IEnumerable<string>> GetAllUniqueGenresAsync();
+
+        // Nouvelle méthode pour trouver un livre avec une image de couverture pour un genre donné
+        Task<Book?> FindBookByGenreWithCoverImageAsync(string genre);
+
+        // Nouvelle méthode pour obtenir tous les livres d'un genre spécifique
+        Task<IEnumerable<Book>> GetBooksByGenreAsync(string genre);
+
+
     }
 }
