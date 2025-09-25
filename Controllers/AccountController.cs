@@ -8,10 +8,12 @@ namespace LibraryApp.Web.Controllers
     public class AccountController : Controller
     {
         private readonly AuthService _auth;
+        private readonly LoanService _loanService;
 
-        public AccountController(AuthService auth)
+        public AccountController(AuthService auth, LoanService loanService)
         {
             _auth = auth;
+            _loanService = loanService;
         }
 
         // ================= VUES =================
@@ -49,14 +51,35 @@ namespace LibraryApp.Web.Controllers
                 return View(dto);
 
             var user = await _auth.LoginAsync(dto);
+            var loans = await _loanService.GetStatusAsync(user.Id);
+            int tmp_status = 0;
+            string status_borrow = "0"; //status de book <<0:false , 1:true>>
+
+            // gestion de login
             if (user == null)
             {
                 ModelState.AddModelError("", "Email ou mot de passe incorrect.");
                 return View(dto);
             }
 
-            // Exemple : gérer session ou cookie (simplifié ici)
+            // gestion de status
+            foreach (var loan in loans)
+            {
+                if (loan.ReturnedAt == null) 
+                { 
+                    tmp_status = tmp_status + 1;
+                }
+            }
+
+            if(tmp_status <2)
+            {
+                status_borrow = "1";
+            }
+    
+
+            //cookie
             HttpContext.Session.SetString("UserId", user.Id);
+            HttpContext.Session.SetString("Status_borrow", status_borrow);
 
             TempData["Message"] = $"Bienvenue, {user.Name} !";
             return RedirectToAction("Index", "Books");

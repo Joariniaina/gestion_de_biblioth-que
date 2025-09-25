@@ -57,6 +57,7 @@
     {
         var book = bookLoan.Book;
         var userId = HttpContextAccessor.HttpContext?.Session.GetString("UserId");
+        var status = HttpContextAccessor.HttpContext?.Session.GetString("Status_borrow");
 
         <div class="col">
             <div class="card h-100 shadow-sm border-0">
@@ -95,7 +96,7 @@
                         <a asp-action="Delete" asp-route-id="@book.Id" class="btn btn-sm btn-outline-danger">Supprimer</a>
 
                         @* Logique pour l'emprunt/retour *@
-                        @if (book.IsAvailable && userId != null)
+                        @if (book.IsAvailable && userId != null && status == "1")
                         {
                             <form asp-action="Borrow" method="post" class="d-inline">
                                 @Html.AntiForgeryToken()

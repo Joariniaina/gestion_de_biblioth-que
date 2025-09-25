@@ -10,6 +10,7 @@
                 <h2 class="text-center mb-4" text-primary style="color: #4682B4; font-weight: bold;">Modifier le livre</h2>
                 <hr />
                 <form asp-action="Edit" method="post">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" asp-for="Id" />
 
                     <div class="mb-3">

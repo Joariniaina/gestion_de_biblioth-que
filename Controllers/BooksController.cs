@@ -103,7 +103,7 @@ namespace LibraryApp.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
+        //edit
         public async Task<IActionResult> Edit(string id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
@@ -127,7 +127,6 @@ namespace LibraryApp.Web.Controllers
 
             return View(dto);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, BookDto dto)
@@ -135,6 +134,8 @@ namespace LibraryApp.Web.Controllers
             if (!ModelState.IsValid) return View(dto);
 
             var book = await _bookService.GetBookByIdAsync(id);
+            var Total_tmp = book.TotalCopies;
+
             if (book == null) return NotFound();
 
             book.Title = dto.Title;
@@ -145,9 +146,20 @@ namespace LibraryApp.Web.Controllers
             book.Genre = dto.Genre;
             book.Language = dto.Language;
             book.PageCount = dto.PageCount;
+            book.CopiesAvailable = dto.TotalCopies - Total_tmp + book.CopiesAvailable;
             book.TotalCopies = dto.TotalCopies;
             book.Summary = dto.Summary;
             book.Tags = dto.Tags;
+
+            for (int i = Total_tmp + 1; i <= dto.TotalCopies; i++)
+            {
+                book.Copies.Add(new CopyInfo
+                {
+                    Code = $"C{i:D3}",
+                    Available = true,
+                    BorrowedBy = ""
+                });
+            }
 
             await _bookService.UpdateBookAsync(id, book);
             return RedirectToAction(nameof(Index));
@@ -238,33 +250,67 @@ namespace LibraryApp.Web.Controllers
             });
             return View("Index", bookLoanViewModels);
         }
+        
+
         // ===== Emprunts via LoanService =====
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Borrow(string bookId, string userId)
-        {
-            Console.WriteLine($"Borrow triggered for BookId={bookId}, UserId={userId}");
+        {   
+            int tmp_status = 0;
+            string status_borrow = "0"; //status de book <<0:false , 1:true>>
+            
+            //############################################################
             var dto = new LoanCreateDto
             {
                 BookId = bookId,
                 UserId = userId
             };
             await _loanService.BorrowAsync(dto);
+
+            // gestion de status
+            var loans = await _loanService.GetStatusAsync(userId);
+            foreach (var loan in loans)
+            {
+                if (loan.ReturnedAt == null) 
+                { 
+                    tmp_status = tmp_status + 1;
+                }
+            }
+            Console.WriteLine($"on a {tmp_status}");
+
+            if(tmp_status <2)
+            {
+                status_borrow = "1";
+            }
+            //mise à jour de session
+            HttpContext.Session.SetString("Status_borrow", status_borrow);
+
             return RedirectToAction(nameof(Index));
         }
 
-            [HttpPost]
-            public async Task<IActionResult> Return(string loanId)
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Return(string loanId)
+        {
+            Console.WriteLine($"Borrow triggered for loanId={loanId}");
+            // recuperation du contenu de la session
+            var session_borrow = HttpContext.Session.GetString("Status_borrow");
+            Console.WriteLine($"Borrow triggered for status={session_borrow}");
+            
+            session_borrow = "1";
+            //mise à jour de session
+            HttpContext.Session.SetString("Status_borrow", session_borrow);
+            
+            var dto = new LoanReturnDto            
             {
-                Console.WriteLine($"Borrow triggered for loanId={loanId}");
-                var dto = new LoanReturnDto
-                {
-                    LoanId = loanId,
-                    Fine = 0 // ou calculer la pénalité si besoin
-                };
-                await _loanService.ReturnAsync(dto);
-                return RedirectToAction(nameof(Index));
-            }
+                LoanId = loanId,
+                Fine = 0 // ou calculer la pénalité si besoin
+            };
+            await _loanService.ReturnAsync(dto);
+            return RedirectToAction(nameof(Index));
+        }
 
 
         // ===== Détails du livre =====

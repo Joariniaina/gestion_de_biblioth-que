@@ -24,6 +24,10 @@ namespace LibraryApp.Web.Models
         public int TotalCopies { get; set; } = 1;
         public int CopiesAvailable { get; set; } = 1;
 
+        // Ajout de la propriété pour l'URL de l'image
+        public string CoverImageUrl { get; set; } = string.Empty;
+
+
         public string Location { get; set; } = string.Empty;
         public string Summary { get; set; } = string.Empty;
         public List<string> Tags { get; set; } = new();

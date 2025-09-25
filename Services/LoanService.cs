@@ -114,5 +114,17 @@ namespace LibraryApp.Web.Services
             }).ToList();
         }
 
+        public async Task<List<LoanStatusDto>> GetStatusAsync(string userId)
+        {
+           var loans = await _loanRepo.GetLoansByUserAsync(userId);
+            
+            return loans.Select(l => new LoanStatusDto
+            {
+                LoanId = l.Id,
+                UserId = l.UserId,
+                BookId = l.BookId,
+                ReturnedAt = l.ReturnedAt
+            }).ToList();
+        }
     }
 }
