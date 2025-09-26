@@ -12,11 +12,13 @@ namespace LibraryApp.Web.Controllers
     {
         private readonly BookService _bookService;
         private readonly LoanService _loanService;
+        private readonly CartService _cartService;
 
-        public BooksController(BookService bookService, LoanService loanService)
+        public BooksController(BookService bookService, LoanService loanService,  CartService cartService)
         {
             _bookService = bookService;
             _loanService = loanService;
+            _cartService = cartService;
         }
 
         // ===== CRUD =====
@@ -256,34 +258,11 @@ namespace LibraryApp.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Borrow(string bookId, string userId)
-        {   
-            int tmp_status = 0;
-            string status_borrow = "0"; //status de book <<0:false , 1:true>>
-            
-            //############################################################
-            var dto = new LoanCreateDto
-            {
-                BookId = bookId,
-                UserId = userId
-            };
+        {
+            var dto = new LoanCreateDto { BookId = bookId, UserId = userId };
             await _loanService.BorrowAsync(dto);
 
-            // gestion de status
-            var loans = await _loanService.GetStatusAsync(userId);
-            foreach (var loan in loans)
-            {
-                if (loan.ReturnedAt == null) 
-                { 
-                    tmp_status = tmp_status + 1;
-                }
-            }
-            Console.WriteLine($"on a {tmp_status}");
-
-            if(tmp_status <2)
-            {
-                status_borrow = "1";
-            }
-            //mise à jour de session
+            var status_borrow = await _loanService.ComputeStatusAsync(userId);
             HttpContext.Session.SetString("Status_borrow", status_borrow);
 
             return RedirectToAction(nameof(Index));
@@ -369,5 +348,80 @@ namespace LibraryApp.Web.Controllers
             return View(books); // Cette vue attendra un IEnumerable<Book>
         }
 
+        // ===== Panier =====
+        [HttpPost]
+        public async Task<IActionResult> AddToCart(string id)
+        {
+            var book = await _bookService.GetBookByIdAsync(id);
+            if (book != null)
+            {
+                _cartService.AddToCart(book);
+            }
+            return RedirectToAction("Index"); // Redirige vers la page d'accueil ou de catalogue
+        }
+        
+        [HttpPost]
+        public IActionResult RemoveFromCart(string id)
+        {
+            _cartService.RemoveFromCart(id);
+            return RedirectToAction("ViewCart"); // Redirige vers la page du panier
+        }
+
+        public IActionResult ViewCart()
+        {
+            var cartItems = _cartService.GetCartItems();
+            return View(cartItems); // Crée une vue pour afficher le panier
+        }
+
+        public IActionResult ClearCart()
+        {
+            var cartItems = _cartService.GetCartItems();
+            foreach (var item in cartItems)
+            {
+                _cartService.RemoveFromCart(item.BookId);
+            }
+            return RedirectToAction("ViewCart"); // Redirige vers la page du panier
+        }
+
+        //=================emprunt de la page panier=================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CartEmprunt(string bookId, string userId)
+        {
+            Borrow(bookId, userId);
+            var status_borrow = await _loanService.ComputeStatusAsync(userId);
+            HttpContext.Session.SetString("Status_borrow", status_borrow);
+            RemoveFromCart(bookId);
+            return RedirectToAction("ViewCart");
+        }
+
+        // ======================== Mes emprunts ==================
+        public async Task<IActionResult> MyLoans()
+        {
+            // Récupérer l’ID de l’utilisateur depuis la session
+            var userId = HttpContext.Session.GetString("UserId");
+            if (string.IsNullOrEmpty(userId))
+            {
+                return RedirectToAction("Login", "Account");
+            }
+            // Appeler ton service
+            var loans = await _loanService.GetLoanOnAsync(userId);
+            // Passer la liste à la vue
+            return View(loans);
+        }
+
+        //================== les emprunts en cours ==================
+        public async Task<IActionResult> AllLoans()
+        {
+            var loans = await _loanService.GetAllLoanOnAsync();
+            return View(loans);
+        }
+
+        //================== les emprunts en retard ================= 
+        public async Task<IActionResult> AllLateLoans()
+        {
+            var loans =await _loanService.GetLoanLateAsync();
+            return View(loans);
+        }
     }
 }

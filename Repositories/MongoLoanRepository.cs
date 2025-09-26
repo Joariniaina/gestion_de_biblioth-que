@@ -51,6 +51,21 @@ namespace LibraryApp.Web.Repositories
             return result.ModifiedCount > 0;
         }
 
+        public async Task<IEnumerable<Loan>> GetLoansByBookIdAsync(string bookId)
+        {
+            return await _loans.Find(l => l.BookId == bookId).ToListAsync();
+        }
+
+        //recuperer tous les emprunts en cours
+        public async Task<IEnumerable<Loan>> GetAllLoansAsync()
+        {
+            var now = DateTime.UtcNow;
+            var filter = Builders<Loan>.Filter.Eq(l => l.ReturnedAt, null) &
+                         Builders<Loan>.Filter.Gt(l => l.DueDate, now);
+            return await _loans.Find(filter).ToListAsync();
+        }
+
+
         // Récupérer tous les emprunts en retard
         public async Task<IEnumerable<Loan>> GetOverdueLoansAsync()
         {
@@ -59,11 +74,6 @@ namespace LibraryApp.Web.Repositories
                          Builders<Loan>.Filter.Eq(l => l.ReturnedAt, null);
 
             return await _loans.Find(filter).ToListAsync();
-        }
-
-        public async Task<IEnumerable<Loan>> GetLoansByBookIdAsync(string bookId)
-        {
-            return await _loans.Find(l => l.BookId == bookId).ToListAsync();
         }
     }
 }

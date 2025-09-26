@@ -1,6 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Rendering
 @using Microsoft.AspNetCore.Http 
-@inject IHttpContextAccessor HttpContextAccessor // Injecté pour l'affichage conditionnel
+@inject IHttpContextAccessor HttpContextAccessor 
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -26,14 +26,29 @@
                     @if (!string.IsNullOrEmpty(HttpContextAccessor.HttpContext?.Session.GetString("UserId")))
                     {
                         <li class="nav-item">
-                            <span class="nav-link text-white-50">Status, @HttpContextAccessor.HttpContext?.Session.GetString("Status_borrow")</span>
+                            @if(Context.Session.GetString("Role") == "User")
+                            {
+                                <a asp-controller="Books" asp-action="MyLoans">Mes emprunts, @HttpContextAccessor.HttpContext?.Session.GetString("Status_borrow")</a>
+                                <a asp-controller="Books" asp-action="ViewCart" class="btn btn-secondary">🛒</a>
+                            }
+                            else
+                            {
+                                <div class="dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Gestion des emprunts
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item" asp-controller="Books" asp-action="AllLoans">Les emprunts en cours</a></li>
+                                        <li><a class="dropdown-item" asp-controller="Books" asp-action="AllLateLoans">Les emprunts en retard</a></li>
+                                    </ul>
+                                </div>
+                            }
                         </li>
                         <li class="nav-item">
                             <form class="d-inline" asp-controller="Account" asp-action="Logout" method="post">
-                                <button type="submit" class="btn btn-outline-light ms-2">Déconnexion</button>
+                                <button type="submit" class="mb-4">Déconnexion</button>
                             </form>
                         </li>
-                        <a href="#">panier</a>
                     }
                     else
                     {

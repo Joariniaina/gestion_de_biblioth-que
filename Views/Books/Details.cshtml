@@ -58,54 +58,70 @@
             
             @* Pied de la carte pour les boutons d'action *@
             <div class="card-footer bg-light d-flex justify-content-end gap-2">
-                <a asp-controller="Books" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Modifier</a>
-                <a asp-controller="Books" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Supprimer</a>
+                @if(Context.Session.GetString("Role") != "User")
+                {
+                    <a asp-controller="Books" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Modifier</a>
+                    <a asp-controller="Books" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Supprimer</a>
+                }
                 <a asp-controller="Books" asp-action="Index" class="btn btn-secondary">Retour à la liste</a>
+                @if(Context.Session.GetString("UserId") !=null)
+                {
+                    <form asp-controller="Books" asp-action="AddToCart" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        <button type="submit" class="btn btn-success btn-lg" 
+                            @(Model.CopiesAvailable == 0 ? "disabled" : "")>
+                            Ajouter au panier
+                        </button>
+                    </form>
+                }
+
             </div>
         </div>
 
         @* Historique des emprunts dans une carte séparée *@
-        <div class="card shadow-sm mt-4">
-            <div class="card-body p-4">
-                <h4 class="mb-3">Historique des emprunts</h4>
-                @if (Model.BorrowHistory.Any())
-                {
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>Utilisateur</th>
-                                    <th>Code copie</th>
-                                    <th>Emprunté le</th>
-                                    <th>Retour prévu</th>
-                                    <th>Retour réel</th>
-                                    <th>Amende</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var loan in Model.BorrowHistory.OrderByDescending(l => l.BorrowedAt))
-                                {
+        @if(Context.Session.GetString("Role") != "User")
+        {
+            <div class="card shadow-sm mt-4">
+                <div class="card-body p-4">
+                    <h4 class="mb-3">Historique des emprunts</h4>
+                    @if (Model.BorrowHistory.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead class="table-primary">
                                     <tr>
-                                        <td>@loan.UserId</td>
-                                        <td>@loan.CopyCode</td>
-                                        <td>@loan.BorrowedAt.ToShortDateString()</td>
-                                        <td>@loan.DueDate.ToShortDateString()</td>
-                                        <td>@(loan.ReturnedAt.HasValue 
-                                            ? loan.ReturnedAt.Value.ToShortDateString() 
-                                            : "Non retourné")</td>
-                                        <td>@loan.Fine.ToString("C")</td>
+                                        <th>Utilisateur</th>
+                                        <th>Code copie</th>
+                                        <th>Emprunté le</th>
+                                        <th>Retour prévu</th>
+                                        <th>Retour réel</th>
+                                        <th>Amende</th>
                                     </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
-                }
-                else
-                {
-                    <p class="text-muted">Aucun emprunt enregistré pour ce livre.</p>
-                }
+                                </thead>
+                                <tbody>
+                                    @foreach (var loan in Model.BorrowHistory.OrderByDescending(l => l.BorrowedAt))
+                                    {
+                                        <tr>
+                                            <td>@loan.UserId</td>
+                                            <td>@loan.CopyCode</td>
+                                            <td>@loan.BorrowedAt.ToShortDateString()</td>
+                                            <td>@loan.DueDate.ToShortDateString()</td>
+                                            <td>@(loan.ReturnedAt.HasValue 
+                                                ? loan.ReturnedAt.Value.ToShortDateString() 
+                                                : "Non retourné")</td>
+                                            <td>@loan.Fine.ToString("C")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Aucun emprunt enregistré pour ce livre.</p>
+                    }
+                </div>
             </div>
-        </div>
-
+        }
     </div>
 </div>

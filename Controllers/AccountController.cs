@@ -51,9 +51,7 @@ namespace LibraryApp.Web.Controllers
                 return View(dto);
 
             var user = await _auth.LoginAsync(dto);
-            var loans = await _loanService.GetStatusAsync(user.Id);
-            int tmp_status = 0;
-            string status_borrow = "0"; //status de book <<0:false , 1:true>>
+            var status_borrow = await _loanService.ComputeStatusAsync(user.Id);
 
             // gestion de login
             if (user == null)
@@ -61,25 +59,11 @@ namespace LibraryApp.Web.Controllers
                 ModelState.AddModelError("", "Email ou mot de passe incorrect.");
                 return View(dto);
             }
-
-            // gestion de status
-            foreach (var loan in loans)
-            {
-                if (loan.ReturnedAt == null) 
-                { 
-                    tmp_status = tmp_status + 1;
-                }
-            }
-
-            if(tmp_status <2)
-            {
-                status_borrow = "1";
-            }
     
-
             //cookie
             HttpContext.Session.SetString("UserId", user.Id);
             HttpContext.Session.SetString("Status_borrow", status_borrow);
+            HttpContext.Session.SetString("Role", user.Role);
 
             TempData["Message"] = $"Bienvenue, {user.Name} !";
             return RedirectToAction("Index", "Books");

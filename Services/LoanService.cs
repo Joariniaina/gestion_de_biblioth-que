@@ -51,7 +51,7 @@ namespace LibraryApp.Web.Services
 
             if (updated == null)
             {
-                return null; // Pas de mise à jour, on arrête
+                return null; // Pas de mise à jour
             }
 
             // Créer le prêt
@@ -114,16 +114,69 @@ namespace LibraryApp.Web.Services
             }).ToList();
         }
 
-        public async Task<List<LoanStatusDto>> GetStatusAsync(string userId)
+        public async Task<string> ComputeStatusAsync(string userId)
         {
-           var loans = await _loanRepo.GetLoansByUserAsync(userId);
+            int tmp_status = 0;
+            string status_borrow = "0";
+
+            var loans = await _loanRepo.GetLoansByUserAsync(userId); // accès direct repo
+            foreach (var loan in loans)
+            {
+                if (loan.ReturnedAt == null)
+                {
+                    tmp_status++;
+                }
+            }
+
+            if (tmp_status < 2)
+            {
+                status_borrow = "1";
+            }
+
+            return status_borrow;
+        }
+
+        public async Task<List<LoanOnDto>> GetLoanOnAsync(string userId)
+        {
+            var loans = await _loanRepo.GetLoansByUserAsync(userId);
             
-            return loans.Select(l => new LoanStatusDto
+            return loans.Where(l => l.ReturnedAt == null).Select(l => new LoanOnDto
+            {
+                LoanId = l.Id,
+                BookId = l.BookId,
+                BorrowedAt = l.BorrowedAt,
+                DueDate = l.DueDate
+            }).ToList();
+        }
+
+        public async Task<List<LoanAllOnDto>> GetAllLoanOnAsync()
+        {
+            var loans = await _loanRepo.GetAllLoansAsync();
+            return loans.Select(l => new LoanAllOnDto
             {
                 LoanId = l.Id,
                 UserId = l.UserId,
                 BookId = l.BookId,
-                ReturnedAt = l.ReturnedAt
+                BorrowedAt = l.BorrowedAt,
+                DueDate = l.DueDate
+            }).ToList();
+        }
+
+
+
+        public async Task<List<LoanLateDto>> GetLoanLateAsync()
+        {
+            var loans = await _loanRepo.GetOverdueLoansAsync();
+            return loans.Select(l => new LoanLateDto
+            {
+                LoanId = l.Id,
+                UserId = l.UserId,
+                BookId = l.BookId,
+                BorrowedAt = l.BorrowedAt,
+                DueDate = l.DueDate,
+                LateDuration = l.ReturnedAt == null
+                    ? (int)(DateTime.UtcNow.Date - l.DueDate.Date).TotalDays
+                    : 0
             }).ToList();
         }
     }

@@ -13,5 +13,6 @@ namespace LibraryApp.Web.Repositories
         Task<bool> ReturnLoanAsync(string loanId, decimal fine = 0);
         Task<IEnumerable<Loan>> GetLoansByBookIdAsync(string bookId);
         Task<IEnumerable<Loan>> GetOverdueLoansAsync();
+        Task<IEnumerable<Loan>> GetAllLoansAsync();
     }
 }

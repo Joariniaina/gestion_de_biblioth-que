@@ -1,0 +1,55 @@
+@model List<LibraryApp.Web.DTOs.CartItemDto>
+
+@{
+    ViewData["Title"] = "Mon Panier";
+}
+
+<h2 class="mb-4">🛒 Mon Panier</h2>
+<a asp-controller="Books" asp-action="ClearCart" class="ms-auto">Clear</a>
+
+@if (Model.Any())
+{
+    var userId = Context.Session.GetString("UserId");
+    var status = Context.Session.GetString("Status_borrow");
+    <div class="row row-cols-1 g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            @if (!string.IsNullOrEmpty(item.CoverImageUrl))
+                            {
+                                <img src="@item.CoverImageUrl" alt="@item.Title" style="width: 80px; height: 120px; object-fit: cover; margin-right: 1.5rem;">
+                            }
+                            <div>
+                                <h5 class="card-title">@item.Title</h5>
+                                <p class="card-text text-muted">@item.Author</p>
+                            </div>
+                            <form asp-controller="Books" asp-action="RemoveFromCart" method="post" class="ms-auto">
+                                <input type="hidden" name="id" value="@item.BookId" />
+                                <button type="submit" class="btn btn-danger">Retirer</button>
+                            </form>
+                            @if (userId != null && status == "1")
+                            {
+                                <form asp-action="CartEmprunt" method="post" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookId" value="@item.BookId" />
+                                    <input type="hidden" name="userId" value="@userId" />
+                                    <button type="submit" class="btn btn-sm btn-success">Emprunter</button>
+                                </form>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info text-center" role="alert">
+        Votre panier est vide. <a asp-controller="Books" asp-action="Index" class="alert-link">Découvrez nos livres !</a>
+    </div>
+}

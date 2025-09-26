@@ -1,0 +1,30 @@
+@model List<LibraryApp.Web.DTOs.LoanOnDto>
+
+<h2>Mes emprunts en cours</h2>
+
+@if (Model != null && Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Livre</th>
+                <th>Date d’emprunt</th>
+                <th>Date de retour prévue</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var loan in Model)
+        {
+            <tr>
+                <td>@loan.BookId</td>
+                <td>@loan.BorrowedAt</td>
+                <td>@loan.DueDate</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Vous n’avez aucun emprunt en cours.</p>
+}
