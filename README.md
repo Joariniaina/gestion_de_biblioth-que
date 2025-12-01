@@ -216,12 +216,3 @@ Ce projet est sous licence MIT.
 Vous pouvez l’utiliser librement.
 
 ---
-
-Si tu veux, je peux aussi :
-✅ Ajouter un logo
-✅ Ajouter des badges GitHub (build, license, stars…)
-✅ Ajouter des screenshots de l’application
-✅ Faire une version anglaise du README
-
-Veux-tu une version encore plus professionnelle ou personnalisée ?
-
