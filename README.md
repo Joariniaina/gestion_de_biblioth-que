@@ -1,9 +1,3 @@
-Voici un **README complet en Markdown**, clair et professionnel, que tu pourras mettre directement dans ton dépôt GitHub pour ton projet *LibraryApp* (ASP.NET Core MVC + EF Core + Architecture en couches).
-
-Tu peux bien sûr me demander de l’adapter selon ton projet exact.
-
----
-
 # 📚 LibraryApp — Application de gestion de bibliothèque
 
 **ASP.NET Core MVC | Entity Framework Core | Architecture en couches**
