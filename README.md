@@ -209,10 +209,3 @@ Les contributions sont les bienvenues !
 N'hésitez pas à ouvrir une **issue** ou une **pull request**.
 
 ---
-
-## 📄 Licence
-
-Ce projet est sous licence MIT.
-Vous pouvez l’utiliser librement.
-
----
